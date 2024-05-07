@@ -4,7 +4,7 @@ import math
 import matplotlib.pyplot as plt
 import scipy.special
 import scipy.special as sc
-
+#uerieirireire
 
 def read_data():
     with open("7. Обобщенное_гамма-распределение_var_7.csv", encoding='utf-8') as r_file:
