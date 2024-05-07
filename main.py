@@ -15,6 +15,7 @@ def read_data():
         for row in file_reader:
             nums.append(float(row[0]))
             count += 1
+        print('we')
         return nums
 
 
