@@ -132,23 +132,31 @@ def draw_gisto(data, bins_param):
     plt.grid(True)
     plt.show()
 
+
 from scipy import integrate
 
+
 def integrand(t, s):
-    return t**(s-1) * math.exp(-t)
+    return t ** (s - 1) * math.exp(-t)
+
 
 def gamma_low(s, x):
     result, _ = integrate.quad(integrand, 0, x, args=(s,))
     return result
+
+
 from scipy import integrate
 import math
 
+
 def integrand_g(t, s):
-    return t**(s-1) * math.exp(-t)
+    return t ** (s - 1) * math.exp(-t)
+
 
 def gamma(s, x):
     result, _ = integrate.quad(integrand_g, x, float('inf'), args=(s,))
     return result
+
 
 # Пример использования
 s = 0
@@ -156,15 +164,14 @@ x = 2
 result = gamma(s, x)
 print("Γ(", s, ",", x, ") =", result)
 
-
-
-
 # Пример использования
 s = 2
 x = 5
 result = gamma_low(s, x)
 print("γ(", s, ",", x, ") =", result)
 print(f"Г встроенная {scipy.special.gamma(s)}")
+
+
 def graphics_and_gistos():
     sorted_data = sorted(data)
 
@@ -206,14 +213,26 @@ def incomplete_gamma_function(s, x):
 
 
 z = 0.6
-print("Гамма-функция для z =", z, ":", incomplete_gamma_function(8, 3))
 
 
-def generalized_gamma_distrib(t, θ, k, δ):
-    pass
+# print("Гамма-функция для z =", z, ":", incomplete_gamma_function(8, 3))
+
+
+def generalized_gamma_distrib(d, p, a, x):
+    return incomplete_gamma_function(d / p, (x / a) ** p) / my_gamma(d / p)
 
 
 data = read_data()
+
+
+def gener_graph(x_values, y_values, a, d, p):
+    plt.plot(x_values, y_values)
+    plt.xlabel('Аргументы')
+    plt.ylabel('Значения функции')
+    plt.title(f'График функции\na={a}, d={d:.2}, p={p:.2}')
+    plt.grid(True)
+    plt.show()
+
 
 if __name__ == '__main__':
     summa = sum_func(data)
@@ -236,3 +255,21 @@ if __name__ == '__main__':
     print(non_disp_sqr)
     print(start_mom)
     print(mid_mom)
+
+    vrand = random.randint(1, 15) / random.randint(1, 2) + 1
+    krand = random.randint(0, 10) / random.randint(5, 23)
+    sigmarand = random.randint(0, 10) / random.randint(5, 23)
+
+    a = 2
+    d = 0.5
+    p = 0.5
+
+    buffer = []
+    xs = []
+    for i in range(122):
+        res = generalized_gamma_distrib(vrand, krand, sigmarand, i)
+        print(f'Iter={i}: x = {i}, res = {res}\n')
+        buffer.append(res)
+    print(vrand, krand, sigmarand)
+    gener_graph([i for i in range(122)], buffer, vrand, krand, sigmarand)
+
