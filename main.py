@@ -2,9 +2,14 @@ import csv
 import random
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 import scipy.special
 import scipy.special as sc
-#uerieirireire
+import scipy.stats as stats
+import mpmath
+
+
+# uerieirireire
 
 def read_data():
     with open("7. Обобщенное_гамма-распределение_var_7.csv", encoding='utf-8') as r_file:
@@ -27,9 +32,8 @@ def sum_func(nums):
     return sum
 
 
-def srednee_func(nums):
+def average_func(nums):
     srednee = sum_func(nums) / len(nums)
-    # print(f"Srednee {srednee}")
     return srednee
 
 
@@ -158,20 +162,6 @@ def gamma(s, x):
     return result
 
 
-# Пример использования
-s = 0
-x = 2
-result = gamma(s, x)
-print("Γ(", s, ",", x, ") =", result)
-
-# Пример использования
-s = 2
-x = 5
-result = gamma_low(s, x)
-print("γ(", s, ",", x, ") =", result)
-print(f"Г встроенная {scipy.special.gamma(s)}")
-
-
 def graphics_and_gistos():
     sorted_data = sorted(data)
 
@@ -203,16 +193,12 @@ def my_gamma(z):
     return sc.gamma(z)
 
 
-# Пример использования
-z = 0.6
-print("Гамма-функция для z =", z, ":", my_gamma(z))
+def LowerIncGamma(x, alpha):
+    return my_gamma(alpha) * sc.gammainc(alpha, x)
 
 
 def incomplete_gamma_function(s, x):
     return sc.gammainc(s, x)
-
-
-z = 0.6
 
 
 # print("Гамма-функция для z =", z, ":", incomplete_gamma_function(8, 3))
@@ -222,7 +208,22 @@ def generalized_gamma_distrib(d, p, a, x):
     return incomplete_gamma_function(d / p, (x / a) ** p) / my_gamma(d / p)
 
 
+def gen2(d, p, a, x):
+    return mpmath.gammainc((x / a) ** p, d / p) / my_gamma(d / p)
+
+
 data = read_data()
+
+from scipy.stats import gengamma
+from scipy.stats import gamma
+
+import sympy as sp
+
+
+def pdf_gener(x, b, c, theta):
+    return (abs(c) * ((x / theta) ** (b - 1)) / (theta * my_gamma(b / c))) * sp.exp(-1 * ((x / theta) ** c))
+
+
 
 
 def gener_graph(x_values, y_values, a, d, p):
@@ -234,42 +235,96 @@ def gener_graph(x_values, y_values, a, d, p):
     plt.show()
 
 
+def pdf_grapher():
+    res_mas = [pdf_gener(i, 5.0, 1.0, 5) for i in range(50)]
+    gener_graph([i for i in range(50)], res_mas, 2.0, 0.5, 0.5)
+
+
+def integral_lower_gamma(t, c, b):
+    x = sp.symbols('x')
+
+    f = (x ** (b - 1)) * sp.exp(-1 * (x ** c))
+
+    integral = sp.integrate(f, (x, 0, t))
+
+    return integral
+
+
+def new_distr(t, b, c, a):
+    tt = t / a
+
+    integral = integral_lower_gamma(tt, c, b)
+
+    res = abs(c) * integral / my_gamma(b / c)
+
+    return res
+
+
 if __name__ == '__main__':
-    summa = sum_func(data)
-    srednee = srednee_func(data)
-    mediana = median(data)
-    moda = mode(data)
-    _range = range_func(data)
-    disp_sqr = shifted_disp(data, srednee)
-    non_disp_sqr = non_shifted_disp(data, srednee)
-    start_mom = start_moment(data, 3)  # k
-    mid_mom = mid_moment(data, srednee, 3)  # k
+    # print(data)
+    # summa = sum_func(data)
+    # srednee = average_func(data)
+    # mediana = median(data)
+    # moda = mode(data)
+    # _range = range_func(data)
+    # disp_sqr = shifted_disp(data, srednee)
+    # non_disp_sqr = non_shifted_disp(data, srednee)
+    # start_mom = start_moment(data, 3)  # k
+    # mid_mom = mid_moment(data, srednee, 3)  # k
     # graphics_and_gistos()
-
-    print(summa)
-    print(srednee)
-    print(mediana)
-    print(moda)
-    print(_range)
-    print(disp_sqr)
-    print(non_disp_sqr)
-    print(start_mom)
-    print(mid_mom)
-
+    #
+    # print(summa)
+    # print(srednee)
+    # print(mediana)
+    # print(moda)
+    # print(_range)
+    # print(disp_sqr)
+    # print(non_disp_sqr)
+    # print(start_mom)
+    # print(mid_mom)
+    print('-----------------------')
     vrand = random.randint(1, 15) / random.randint(1, 2) + 1
     krand = random.randint(0, 10) / random.randint(5, 23)
     sigmarand = random.randint(0, 10) / random.randint(5, 23)
 
-    a = 2
-    d = 0.5
-    p = 0.5
+    x = sp.symbols('x')
 
+    #pdf_grapher()
+
+    # Определяем функцию
+    f = x ** 2
+
+    # Вычисляем определенный интеграл от 0 до 1
+    integral = sp.integrate(f, (x, 0, 1))
+
+    sdf = integral * 3
+
+    a = 2
+    d = 1.0
+    p = 2.0
+    cpdata = data
+    cpdata = sorted(cpdata)
+    sub = random.sample(cpdata, k=200)
+    print(sub)
+    shape_parameter = d
+    rv = gengamma(d, p)
+    cdf_value = gengamma.cdf(4, d, p)
+    # cdf_value = gamma.cdf(4, a=1, scale=1)
+    th = my_gamma(4)
+    # res = generalized_gamma_distrib(d, p, a, 4)
+    res = sc.gammainc(d / p, (4 / a) ** p)
+    # scipy.gengamma()
     buffer = []
     xs = []
-    for i in range(122):
-        res = generalized_gamma_distrib(vrand, krand, sigmarand, i)
-        print(f'Iter={i}: x = {i}, res = {res}\n')
-        buffer.append(res)
-    print(vrand, krand, sigmarand)
-    gener_graph([i for i in range(122)], buffer, vrand, krand, sigmarand)
+    x_values = np.arange(0.0001, 7, 0.01)
 
+    for i in range(0, 10):
+        # res = gen2(d, p, a, i)
+        # res = sc.gammainc(d / p, (i / a) ** p)
+        # res = new_distr(i, d, p, a)
+        res = generalized_gamma_distrib(d, p, a, i)
+        print(f'Iter={i}: x = {sub[i]}, res = {res}\n')
+        buffer.append(res)
+    # print(vrand, krand, sigmarand)
+    # gener_graph(sub, buffer, a, d, p)
+    gener_graph([i for i in range(0, 10)], buffer, a, d, p)
