@@ -28,28 +28,24 @@ def sum_func(nums):
     sum = 0
     for i in range(0, len(nums)):
         sum += nums[i]
-    # print(f"Sum {sum}")
     return sum
 
 
 def average_func(nums):
-    srednee = sum_func(nums) / len(nums)
-    return srednee
+    avg = sum_func(nums) / len(nums)
+    return avg
 
 
 def median(arr):
     sorted_arr = sorted(arr)
     n = len(arr)
     if n % 2 == 0:
-        # Если количество элементов четное, медиана - среднее двух центральных элементов
         return (sorted_arr[n // 2 - 1] + sorted_arr[n // 2]) / 2
     else:
-        # Если количество элементов нечетное, медиана - центральный элемент
         return sorted_arr[n // 2]
 
 
 def mode(arr):
-    # Создаем словарь для подсчета количества вхождений каждого элемента
     counts = {}
     for num in arr:
         if num in counts:
@@ -57,10 +53,8 @@ def mode(arr):
         else:
             counts[num] = 1
 
-    # Находим максимальное количество вхождений
     max_count = max(counts.values())
 
-    # Создаем список, содержащий все элементы, которые встречаются максимальное количество раз
     modes = [num for num, count in counts.items() if count == max_count]
 
     return modes[0]
@@ -224,8 +218,6 @@ def pdf_gener(x, b, c, theta):
     return (abs(c) * ((x / theta) ** (b - 1)) / (theta * my_gamma(b / c))) * sp.exp(-1 * ((x / theta) ** c))
 
 
-
-
 def gener_graph(x_values, y_values, a, d, p):
     plt.plot(x_values, y_values)
     plt.xlabel('Аргументы')
@@ -260,7 +252,39 @@ def new_distr(t, b, c, a):
     return res
 
 
+def sum1_func(a, p):
+    s = 0
+    for i in range(len(data)):
+        s += (abs(data[i]) / a) ** p
+    return s
+
+
+def sum2_func(a):
+    s = 0
+    for i in range(len(data)):
+        s += math.log(abs(data[i]) / a)
+    return s
+
+
+def sum3_func(a, p):
+    s = 0
+    for i in range(len(data)):
+        s += ((abs(data[i]) / a) ** p) * math.log(abs(data[i]) / a)
+    return s
+
+
 if __name__ == '__main__':
+    # n = len(data)
+    # for a in range(1, 2):
+    #     for p in range(1, 100):
+    #         for d in range(1, 100):
+    #             eq1 = (d - (p / n) * sum1_func(a, p))
+    #             eq2 = sc.digamma(d / p) - (p / n) * sum2_func(a)
+    #             eq3 = 1 / p + (d / (p ** 2)) * sc.digamma(d / p) - (1 / n) * sum3_func(a, p)
+    #             if abs(eq1) < 1 and abs(eq2) < 1 and abs(eq3) < 1:
+    #                 print(f' d = {d}, p = {p}, a = {a}')
+    # d = 3, p = 1, a = 1
+    pass
     # print(data)
     # summa = sum_func(data)
     # srednee = average_func(data)
@@ -282,22 +306,22 @@ if __name__ == '__main__':
     # print(non_disp_sqr)
     # print(start_mom)
     # print(mid_mom)
-    print('-----------------------')
-    vrand = random.randint(1, 15) / random.randint(1, 2) + 1
-    krand = random.randint(0, 10) / random.randint(5, 23)
-    sigmarand = random.randint(0, 10) / random.randint(5, 23)
-
-    x = sp.symbols('x')
-
-    #pdf_grapher()
+    # print('-----------------------')
+    # vrand = random.randint(1, 15) / random.randint(1, 2) + 1
+    # krand = random.randint(0, 10) / random.randint(5, 23)
+    # sigmarand = random.randint(0, 10) / random.randint(5, 23)
+    #
+    # x = sp.symbols('x')
+    #
+    # #pdf_grapher()
 
     # Определяем функцию
-    f = x ** 2
+    #f = x ** 2
 
     # Вычисляем определенный интеграл от 0 до 1
-    integral = sp.integrate(f, (x, 0, 1))
+    # integral = sp.integrate(f, (x, 0, 1))
 
-    sdf = integral * 3
+   # sdf = integral * 3
 
     a = 2
     d = 1.0
@@ -317,14 +341,19 @@ if __name__ == '__main__':
     buffer = []
     xs = []
     x_values = np.arange(0.0001, 7, 0.01)
-
+    for ind in sorted(data):
+        res = generalized_gamma_distrib(d, p, a, ind + max(data))
+        xs.append(res)
+    gener_graph(sorted(data), xs, a, d, p)
+    exit(2)
+    # print(vrand, krand, sigmarand)
     for i in range(0, 10):
+
         # res = gen2(d, p, a, i)
         # res = sc.gammainc(d / p, (i / a) ** p)
         # res = new_distr(i, d, p, a)
         res = generalized_gamma_distrib(d, p, a, i)
         print(f'Iter={i}: x = {sub[i]}, res = {res}\n')
         buffer.append(res)
-    # print(vrand, krand, sigmarand)
     # gener_graph(sub, buffer, a, d, p)
     gener_graph([i for i in range(0, 10)], buffer, a, d, p)
