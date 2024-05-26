@@ -273,18 +273,45 @@ def sum3_func(a, p):
     return s
 
 
+def truefunc(d, p, a):
+    prod = 1
+    for x in data:
+        xi = abs(x)
+        res = (abs(p) * (xi / a) ** (d - 1)) * math.exp(-1 * (xi / a) ** p) / (a * my_gamma(d / p))
+        prod = prod * res
+    print('res1', prod)
+    res1 = prod
+    d2 = 3
+    p2 = 1
+    a2 = 1
+    prod = 1
+    for x in data:
+        xi = abs(x)
+        res33 = (abs(p2) * (xi / a2) ** (d2 - 1)) * math.exp(-1 * (xi / a2) ** p2) / (a2 * my_gamma(d2 / p2))
+        prod = prod * res33
+    print('res2', prod)
+    res2 = prod
+    y = 2 * math.log(res1 / res2)
+    print(y)
+
+
 if __name__ == '__main__':
-    # n = len(data)
-    # for a in range(1, 2):
-    #     for p in range(1, 100):
-    #         for d in range(1, 100):
-    #             eq1 = (d - (p / n) * sum1_func(a, p))
-    #             eq2 = sc.digamma(d / p) - (p / n) * sum2_func(a)
-    #             eq3 = 1 / p + (d / (p ** 2)) * sc.digamma(d / p) - (1 / n) * sum3_func(a, p)
-    #             if abs(eq1) < 1 and abs(eq2) < 1 and abs(eq3) < 1:
-    #                 print(f' d = {d}, p = {p}, a = {a}')
+    n = len(data)
+    for a in range(1, 5):
+        for d in range(1, 100):
+            p = 1
+            eq1 = (d - (p / n) * sum1_func(a, p))
+            eq2 = sc.digamma(d / p) - (p / n) * sum2_func(a)
+            # eq3 = 1 / p + (d / (p ** 2)) * sc.digamma(d / p) - (1 / n) * sum3_func(a, p)
+            if abs(eq1) < 1 and abs(eq2) < 1:
+                print(f' d = {d}, p = {p}, a = {a} res = {abs(eq1) + abs(eq2)}')
+    # d = 1, p = 2, a = 4
+    truefunc(36, 9, 3)
+    # PPP d = 36 p = 9 a = 3
+    # PPP d = 2 p = 1 a = 2
+    exit(0)
     # d = 3, p = 1, a = 1
-    pass
+    # pass
     # print(data)
     # summa = sum_func(data)
     # srednee = average_func(data)
@@ -316,12 +343,12 @@ if __name__ == '__main__':
     # #pdf_grapher()
 
     # Определяем функцию
-    #f = x ** 2
+    # f = x ** 2
 
     # Вычисляем определенный интеграл от 0 до 1
     # integral = sp.integrate(f, (x, 0, 1))
 
-   # sdf = integral * 3
+    # sdf = integral * 3
 
     a = 2
     d = 1.0
@@ -342,13 +369,12 @@ if __name__ == '__main__':
     xs = []
     x_values = np.arange(0.0001, 7, 0.01)
     for ind in sorted(data):
-        res = generalized_gamma_distrib(d, p, a, ind + max(data))
+        res = generalized_gamma_distrib(d, p, a, abs(ind))
         xs.append(res)
-    gener_graph(sorted(data), xs, a, d, p)
+    gener_graph([abs(it) for it in sorted(data)], xs, a, d, p)
     exit(2)
     # print(vrand, krand, sigmarand)
     for i in range(0, 10):
-
         # res = gen2(d, p, a, i)
         # res = sc.gammainc(d / p, (i / a) ** p)
         # res = new_distr(i, d, p, a)
