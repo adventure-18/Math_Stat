@@ -294,6 +294,45 @@ def truefunc(d, p, a):
     y = 2 * math.log(res1 / res2)
     print(y)
 
+def distrib_gipotize_kolmogorov(d, p, a):
+    data_sub=sorted(data)
+    for i in range(0,len(data)):
+        data_sub[i]=abs(data_sub[i])
+
+    #print(data_sub)
+    d_statistic, p_value = stats.kstest(data_sub, 'gengamma',args=(d,p,0,a))
+
+    print(f"D-статистика: {d_statistic}")
+    print(f"P-значение: {p_value}")
+
+    # Интерпретация результата
+    alpha = 0.05  # Уровень значимости
+    if p_value > alpha:
+        print("Не можем отвергнуть нулевую гипотезу (данные соответствуют нормальному распределению)")
+    else:
+        print("Отклоняем нулевую гипотезу (данные не соответствуют нормальному распределению)")
+def distrib_chisquare(d,p,a):
+    data_sub = sorted(data)
+    for i in range(0, len(data)):
+        data_sub[i] = abs(data_sub[i])
+    num_bins = 50
+
+    # Построим гистограмму для данных
+    observed_freq, bin_edges = np.histogram(data_sub, bins=num_bins)
+    #bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+    expected_freq = np.diff(stats.gengamma.cdf(bin_edges, d, p, scale=a)) * len(data_sub)
+    chi2_statistic, p_value = stats.chisquare(observed_freq, expected_freq)
+    print(f"Chi2-статистика: {chi2_statistic}")
+    print(f"P-значение: {p_value}")
+
+    # Интерпретация результата
+    alpha = 0.05  # Уровень значимости
+    if p_value > alpha:
+        print("Не можем отвергнуть нулевую гипотезу (данные соответствуют обобщённому гамма-распределению)")
+    else:
+        print("Отклоняем нулевую гипотезу (данные не соответствуют обобщённому гамма-распределению)")
+
 
 if __name__ == '__main__':
     n = len(data)
@@ -306,10 +345,11 @@ if __name__ == '__main__':
             if abs(eq1) < 1 and abs(eq2) < 1:
                 print(f' d = {d}, p = {p}, a = {a} res = {abs(eq1) + abs(eq2)}')
     # d = 1, p = 2, a = 4
-    truefunc(36, 9, 3)
+    #truefunc(36, 9, 3)
+
     # PPP d = 36 p = 9 a = 3
     # PPP d = 2 p = 1 a = 2
-    exit(0)
+    #exit(0)
     # d = 3, p = 1, a = 1
     # pass
     # print(data)
@@ -350,9 +390,11 @@ if __name__ == '__main__':
 
     # sdf = integral * 3
 
-    a = 2
-    d = 1.0
-    p = 2.0
+    a = 1.8
+    d = 6.5
+    p = 2.9
+
+    distrib_chisquare(d, p, a)
     cpdata = data
     cpdata = sorted(cpdata)
     sub = random.sample(cpdata, k=200)
@@ -362,6 +404,7 @@ if __name__ == '__main__':
     cdf_value = gengamma.cdf(4, d, p)
     # cdf_value = gamma.cdf(4, a=1, scale=1)
     th = my_gamma(4)
+
     # res = generalized_gamma_distrib(d, p, a, 4)
     res = sc.gammainc(d / p, (4 / a) ** p)
     # scipy.gengamma()
